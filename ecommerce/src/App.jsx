@@ -4,6 +4,7 @@ import Loader from './components/loader'
 import Header from './components/header'
 import ProtectedRoute from "./components/protected-route";
 import Footer from './components/footer';
+import { Toaster } from "react-hot-toast";
 
 const Search = lazy(() => import("./pages/search"))
 const Home = lazy(() => import('./pages/home'))
@@ -14,11 +15,11 @@ const Orders = lazy(() => import("./pages/order"));
 const OrderDetails = lazy(() => import("./pages/orderDetails"));
 
 const App = () => {
-  const user = true;
+  const user = false;
 
   return (
-    <Suspense fallback={<Loader />}>
-      <Router>
+    <Router>
+      <Suspense fallback={<Loader />}>
         <Header />
         <Routes>
           <Route path='/' element={<Home />} />
@@ -41,9 +42,10 @@ const App = () => {
             <Route path="/order/:id" element={<OrderDetails />} />
           </Route>
         </Routes>
-        <Footer/>
-      </Router>
-    </Suspense>
+        <Footer />
+      </Suspense>
+      <Toaster position="bottom-center" />
+    </Router>
   )
 }
 
