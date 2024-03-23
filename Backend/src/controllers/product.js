@@ -4,7 +4,9 @@ const ErrorHandler = require("../utils/errorHandler");
 const { rm } = require("fs");
 const Product = modelsDB.product;
 const sequelize = modelsDB.sequelize;
-
+const { Op } = require('sequelize');
+const myCache = require('../server');
+const { deleteCache, storeCache, findCacheData, storeListCache } = require('../config/cache');
 
 const newProduct = TryCatch(
     async (req, res, next) => {
@@ -29,7 +31,10 @@ const newProduct = TryCatch(
             photo: photo.path,
         });
 
-        console.log(Products)
+        deleteCache(`latest-products`)
+        deleteCache(`getAdminProducts`)
+        deleteCache(`categories`)
+
         return res.status(201).json({
             success: true,
             message: "Product Created Successfully",
@@ -38,11 +43,19 @@ const newProduct = TryCatch(
 );
 
 const getlatestProducts = TryCatch(async (req, res, next) => {
+    let products;
 
-    let products = await Product.findAll({
-        order: [['createdAt', 'DESC']], // Sort by createdAt in descending order
-        limit: 5, // Limit the result to 5 records
-    });
+    let cachedData = await findCacheData(`latest-products`)
+
+    if (cachedData) {
+        products = JSON.parse(cachedData);
+    } else {
+        products = await Product.findAll({
+            order: [['createdAt', 'DESC']], // Sort by createdAt in descending order
+            limit: 5, // Limit the result to 5 records
+        });
+        storeCache(`latest-products`, products);
+    }
 
     return res.status(200).json({
         success: true,
@@ -54,14 +67,62 @@ const getAllProducts = TryCatch(async (req, res, next) => {
     const { search, sort, category, price } = req.query;
     const page = Number(req.query.page) || 1;
     const limit = Number(process.env.PRODUCT_PER_PAGE) || 8;
-    const skip = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
+    const whereConditions = {};
+
+    if (search) {
+        whereConditions.name = {
+            [Op.iLike]: `%${search}%`
+        };
+    }
+
+    if (price) {
+        whereConditions.price = {
+            [Op.lte]: price
+        };
+    }
+
+    if (category) {
+        whereConditions.category = category;
+    }
+
+    try {
+        const products = await Product.findAll({
+            where: whereConditions,
+            order: sort ? [['price', sort === 'asc' ? 'ASC' : 'DESC']] : [],
+            limit: limit,
+            offset: offset
+        });
+
+        const totalCount = await Product.count({ where: whereConditions });
+        const totalPages = Math.ceil(totalCount / limit);
+
+        return res.status(200).json({
+            success: true,
+            products: products,
+            totalPage: totalPages
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
 });
 
 
 const getAdminProducts = TryCatch(async (req, res, next) => {
-    let products = await Product.findAll({});
+    let products;
 
+    let cachedData = await findCacheData(`getAdminProducts`)
+
+    if (cachedData) {
+        products = JSON.parse(cachedData);
+    } else {
+        products = await Product.findAll({});
+        storeCache(`getAdminProducts`, products);
+    }
     return res.status(200).json({
         success: true,
         products,
@@ -71,13 +132,19 @@ const getAdminProducts = TryCatch(async (req, res, next) => {
 
 const getSingleProduct = TryCatch(async (req, res, next) => {
     const id = req.params.id;
-    let products = await Product.findByPk(id);
+    let cachedData = await findCacheData(`product-${id}`)
+    let products;
 
+    if (cachedData) {
+        products = JSON.parse(cachedData);
+    } else {
+        products = await Product.findByPk(id);
+        storeCache(`product-${id}`, products);
+    }
     return res.status(200).json({
         success: true,
         products,
     });
-
 });
 
 const deleteProduct = TryCatch(async (req, res, next) => {
@@ -96,6 +163,11 @@ const deleteProduct = TryCatch(async (req, res, next) => {
         }
     });
 
+    deleteCache(`product-${id}`)
+    deleteCache(`latest-products`)
+    deleteCache(`getAdminProducts`)
+    deleteCache(`categories`)
+
     return res.status(200).json({
         success: true,
         message: "Product Deleted Successfully",
@@ -108,7 +180,7 @@ const updateProduct = TryCatch(async (req, res, next) => {
     const photo = req.file;
     const product = await Product.findByPk(id);
     let updatedFields = {};
-    
+
     if (!product) return next(new ErrorHandler("Product Not Found", 404));
 
     if (photo) {
@@ -122,12 +194,15 @@ const updateProduct = TryCatch(async (req, res, next) => {
     if (price) updatedFields.price = price;
     if (stock) updatedFields.stock = stock;
     if (category) updatedFields.category = category;
-  
-     await Product.update(updatedFields, {
+
+    await Product.update(updatedFields, {
         where: { id: id },
         returning: true, // Include this option to return the updated record
-      });
-    
+    });
+    deleteCache(`product-${id}`)
+    deleteCache(`latest-products`)
+    deleteCache(`getAdminProducts`)
+    deleteCache(`categories`)
     return res.status(200).json({
         success: true,
         message: "Product Updated Successfully"
@@ -135,18 +210,53 @@ const updateProduct = TryCatch(async (req, res, next) => {
 });
 
 const getAllCategories = TryCatch(async (req, res, next) => {
+    let cachedData = await findCacheData(`categories`)
+    let categories;
 
-    const categories = await Product.findAll({
-        attributes: [
-            [sequelize.fn('DISTINCT', sequelize.col('category')), 'category']
-        ]
-    });
-    const distinctCategories = categories.map(category => category.category);
-
+    if (cachedData) {
+        categories = JSON.parse(cachedData);
+    } else {
+        categories = await Product.findAll({
+            attributes: [
+                [sequelize.fn('DISTINCT', sequelize.col('category')), 'category']
+            ]
+        });
+        categories = categories.map(category => category.category);
+        storeCache(`categories`, categories);
+    }
     return res.status(200).json({
         success: true,
-        distinctCategories,
+        categories,
     });
 });
+
+// const generateRandomProducts = async (count = 10) => {
+//     const products = [];
+
+//     for (let i = 0; i < count; i++) {
+//       const product = {
+//         name: faker.commerce.productName(),
+//         photo: "uploads\\5ba9bd91-b89c-40c2-bb8a-66703408f986.png",
+//         price: faker.commerce.price({ min: 1500, max: 80000, dec: 0 }),
+//         stock: faker.datatype.number({ min: 0, max: 100 }),
+//         category: faker.commerce.department(),
+//         createdAt: faker.date.past(),
+//         updatedAt: faker.date.recent(),
+//       };
+
+//       products.push(product);
+//     }
+
+//     try {
+//       await Product.bulkCreate(products);
+//       console.log({ success: true });
+//     } catch (error) {
+//       console.error('Error generating products:', error);
+//     }
+//   };
+
+
+//   generateRandomProducts(100)
+
 
 module.exports = { newProduct, getlatestProducts, getAllProducts, getAllCategories, getAdminProducts, getSingleProduct, deleteProduct, updateProduct }

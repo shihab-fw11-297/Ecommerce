@@ -20,6 +20,7 @@
     "node-cache": "^5.1.2",
     "nodemon": "^3.1.0",
     "pg": "^8.11.3",
+    "redis": "^4.6.13",
     "sequelize": "^6.37.1",
     "sequelize-cli": "^6.6.2",
     "stripe": "^14.22.0",
@@ -27,6 +28,8 @@
     "validator": "^13.11.0"
   },
   "devDependencies": {
-    "@types/validator": "^13.11.9"
+    "@faker-js/faker": "^8.4.1",
+    "@types/validator": "^13.11.9",
+    "faker": "^6.6.6"
   }
 }
