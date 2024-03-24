@@ -1,6 +1,11 @@
 const { Sequelize, DataTypes } = require('sequelize');
+const { config } = require("dotenv");
+config({
+    path: "./.env",
+  });
 
-const db = 'postgresql://Ecommerce_owner:9Wvxyb6IDfaJ@ep-broad-star-a5ofarwh.us-east-2.aws.neon.tech/ecommerce?sslmode=require';
+const db = process.env.DBURL;
+console.log(db)
 //const sequelize = new Sequelize({ dialect: 'sqlite', storage: db });
 const sequelize = new Sequelize(db, { logging: false });
 
@@ -16,7 +21,10 @@ modelsDB.sequelize = sequelize;
 
 modelsDB.users = require("../model/user")(sequelize, DataTypes);
 modelsDB.product = require("../model/product")(sequelize, DataTypes);
+modelsDB.order = require("../model/order")(sequelize, DataTypes);
 
+
+modelsDB.order.belongsTo(modelsDB.users,{foreignKey:`user`, as:`userInfo`});
 
 modelsDB.sequelize.sync({ force: false }).then(() => {
     console.log("DONE");

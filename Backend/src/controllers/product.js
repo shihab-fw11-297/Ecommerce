@@ -7,7 +7,7 @@ const sequelize = modelsDB.sequelize;
 const { Op } = require('sequelize');
 const myCache = require('../server');
 const { deleteCache, storeCache, findCacheData, storeListCache } = require('../config/cache');
-
+const { faker } = require('@faker-js/faker');
 const newProduct = TryCatch(
     async (req, res, next) => {
         const { name, price, stock, category } = req.body;
@@ -230,33 +230,33 @@ const getAllCategories = TryCatch(async (req, res, next) => {
     });
 });
 
-// const generateRandomProducts = async (count = 10) => {
-//     const products = [];
+const generateRandomProducts = async (count = 10) => {
+    const products = [];
 
-//     for (let i = 0; i < count; i++) {
-//       const product = {
-//         name: faker.commerce.productName(),
-//         photo: "uploads\\5ba9bd91-b89c-40c2-bb8a-66703408f986.png",
-//         price: faker.commerce.price({ min: 1500, max: 80000, dec: 0 }),
-//         stock: faker.datatype.number({ min: 0, max: 100 }),
-//         category: faker.commerce.department(),
-//         createdAt: faker.date.past(),
-//         updatedAt: faker.date.recent(),
-//       };
+    for (let i = 0; i < count; i++) {
+      const product = {
+        name: faker.commerce.productName(),
+        photo: faker.image.urlLoremFlickr({ category: faker.commerce.department() }),
+        price: faker.commerce.price({ min: 1500, max: 80000, dec: 0 }),
+        stock: faker.datatype.number({ min: 0, max: 100 }),
+        category: faker.commerce.department(),
+        createdAt: faker.date.past(),
+        updatedAt: faker.date.recent(),
+      };
 
-//       products.push(product);
-//     }
+      products.push(product);
+    }
 
-//     try {
-//       await Product.bulkCreate(products);
-//       console.log({ success: true });
-//     } catch (error) {
-//       console.error('Error generating products:', error);
-//     }
-//   };
+    try {
+      await Product.bulkCreate(products);
+      console.log({ success: true });
+    } catch (error) {
+      console.error('Error generating products:', error);
+    }
+  };
 
 
-//   generateRandomProducts(100)
+//   generateRandomProducts(20)
 
 
 module.exports = { newProduct, getlatestProducts, getAllProducts, getAllCategories, getAdminProducts, getSingleProduct, deleteProduct, updateProduct }

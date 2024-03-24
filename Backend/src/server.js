@@ -1,18 +1,26 @@
 const express = require("express");
 const {connection} = require("./config/db");
-const dotenv = require("dotenv");
+const { config } = require("dotenv");
 const { errorMiddleware } = require("./middlewares/error.js");
 const userRoute = require("./routes/user.js");
 const productRoute = require("./routes/products.js");
-
-dotenv.config();
+const orderRoute = require("./routes/order.js");
+const morgan = require('morgan');
 
 const app = express();
 app.use(express.json()); 
-const PORT = 5000;
+app.use(morgan("dev"));
+
+config({
+    path: "./.env",
+  });
+
+const PORT = process.env.PORT || 2000;
 
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/product", productRoute);
+app.use("/api/v1/order", orderRoute);
+
 app.use(errorMiddleware);
 
 // connectDB();

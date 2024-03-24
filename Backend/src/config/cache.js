@@ -4,7 +4,7 @@ let redisClient;
 // Redis connection
 (async () => {
     redisClient = redis.createClient({
-        url: `rediss://red-cnv8n0acn0vc73c7aacg:32vrRvmXDXI9G3WcxxgnLG8ed9dwYiF0@oregon-redis.render.com:6379`
+        url: process.env.REDISURI
     });
     redisClient.on('error', (error) => console.log('redis error' + error));
     await redisClient.connect();
