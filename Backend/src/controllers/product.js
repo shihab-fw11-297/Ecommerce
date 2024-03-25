@@ -8,6 +8,7 @@ const { Op } = require('sequelize');
 const myCache = require('../server');
 const { deleteCache, storeCache, findCacheData, storeListCache } = require('../config/cache');
 const { faker } = require('@faker-js/faker');
+
 const newProduct = TryCatch(
     async (req, res, next) => {
         const { name, price, stock, category } = req.body;

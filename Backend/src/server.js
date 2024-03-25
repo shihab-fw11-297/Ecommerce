@@ -5,6 +5,7 @@ const { errorMiddleware } = require("./middlewares/error.js");
 const userRoute = require("./routes/user.js");
 const productRoute = require("./routes/products.js");
 const orderRoute = require("./routes/order.js");
+const paymentRoute = require("./routes/payment.js");
 const morgan = require('morgan');
 
 const app = express();
@@ -20,6 +21,8 @@ const PORT = process.env.PORT || 2000;
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/order", orderRoute);
+app.use("/api/v1/payment", paymentRoute);
+
 
 app.use(errorMiddleware);
 
