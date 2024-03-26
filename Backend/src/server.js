@@ -6,11 +6,13 @@ const userRoute = require("./routes/user.js");
 const productRoute = require("./routes/products.js");
 const orderRoute = require("./routes/order.js");
 const paymentRoute = require("./routes/payment.js");
+const cors = require('cors');
 const morgan = require('morgan');
 
 const app = express();
 app.use(express.json()); 
 app.use(morgan("dev"));
+app.use(cors());
 
 config({
     path: "./.env",

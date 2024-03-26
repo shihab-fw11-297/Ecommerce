@@ -43,31 +43,80 @@ const newProduct = TryCatch(
     }
 );
 
-const getlatestProducts = TryCatch(async (req, res, next) => {
+
+
+const getbestProducts = TryCatch(async (req, res, next) => {
     let products;
 
-    let cachedData = await findCacheData(`latest-products`)
+    // let cachedData = await findCacheData(`latest-products`)
 
-    if (cachedData) {
-        products = JSON.parse(cachedData);
-    } else {
+    // if (cachedData) {
+    //     products = JSON.parse(cachedData);
+    // } else {
+
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 8;
+    const offset = (page - 1) * limit;
+
+
         products = await Product.findAll({
-            order: [['createdAt', 'DESC']], // Sort by createdAt in descending order
-            limit: 5, // Limit the result to 5 records
+            order: [['createdAt', 'ASC']], // Sort by createdAt in descending order
+            limit: limit,
+            offset: offset
         });
-        storeCache(`latest-products`, products);
-    }
+    //     storeCache(`latest-products`, products);
+    // }
+
+    const totalCount = await Product.count({ });
+    const totalPages = Math.ceil(totalCount / limit);
+
 
     return res.status(200).json({
         success: true,
         products,
+        totalPage: totalPages,
+        limit:req.query.limit
+    });
+});
+
+const getlatestProducts = TryCatch(async (req, res, next) => {
+    let products;
+
+    // let cachedData = await findCacheData(`latest-products`)
+
+    // if (cachedData) {
+    //     products = JSON.parse(cachedData);
+    // } else {
+
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 8;
+    const offset = (page - 1) * limit;
+
+
+        products = await Product.findAll({
+            order: [['createdAt', 'DESC']], // Sort by createdAt in descending order
+            limit: limit,
+            offset: offset
+        });
+    //     storeCache(`latest-products`, products);
+    // }
+
+    const totalCount = await Product.count({ });
+    const totalPages = Math.ceil(totalCount / limit);
+
+
+    return res.status(200).json({
+        success: true,
+        products,
+        totalPage: totalPages,
+        limit:req.query.limit
     });
 });
 
 const getAllProducts = TryCatch(async (req, res, next) => {
     const { search, sort, category, price } = req.query;
     const page = Number(req.query.page) || 1;
-    const limit = Number(process.env.PRODUCT_PER_PAGE) || 8;
+    const limit = Number(req.query.limit) || 8;
     const offset = (page - 1) * limit;
 
     const whereConditions = {};
@@ -102,7 +151,8 @@ const getAllProducts = TryCatch(async (req, res, next) => {
         return res.status(200).json({
             success: true,
             products: products,
-            totalPage: totalPages
+            totalPage: totalPages,
+            limit:req.query.limit
         });
     } catch (error) {
         return res.status(500).json({
@@ -260,4 +310,4 @@ const generateRandomProducts = async (count = 10) => {
 //   generateRandomProducts(20)
 
 
-module.exports = { newProduct, getlatestProducts, getAllProducts, getAllCategories, getAdminProducts, getSingleProduct, deleteProduct, updateProduct }
+module.exports = { getbestProducts,newProduct, getlatestProducts, getAllProducts, getAllCategories, getAdminProducts, getSingleProduct, deleteProduct, updateProduct }

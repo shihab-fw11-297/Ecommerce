@@ -5,20 +5,25 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../firebase";
 import toast from "react-hot-toast";
 import { useLoginMutation } from "../redux/api/userAPI";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
+// import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
+import { userExist, userNotExist } from "../redux/reducer/userReducer";
+import { useDispatch } from "react-redux";
+
 
 const Login = () => {
     const [gender, setGender] = useState("");
-  const [date, setDate] = useState("");
-
+    const [date, setDate] = useState("");
+    const [login] = useLoginMutation();
+    const dispatch = useDispatch();
 
   const loginHandler = async () => {
     try {
+        console.log("-----")
         const provider = new GoogleAuthProvider();
         const { user } = await signInWithPopup(auth, provider);
   
-        const [login] = useLoginMutation();
-
+      
+        console.log(login);
         const res = await login({
             name: user.displayName,
             email: user.email,
@@ -29,10 +34,11 @@ const Login = () => {
             _id: user.uid,
           });
 
-        console.log(user);
+      
 
         if ("data" in res) {
             toast.success(res.data.message);
+            
         } else {
             const error = res.error;
             const message = (error.data).message;
@@ -40,6 +46,7 @@ const Login = () => {
         }
 
     } catch (error) {
+        console.log("error",error)
         toast.error("Sign In Fail");
       }
   }

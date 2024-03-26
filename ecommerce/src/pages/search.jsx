@@ -1,7 +1,8 @@
 import React from 'react'
 import { useState } from "react";
-// import { Skeleton } from "../components/loader";
+import { Skeleton } from "../components/loader";
 import Card from '../components/card'
+import { useCategoriesQuery } from '../redux/api/productAPI';
 
 const Search = () => {
   const [search, setSearch] = useState("");
@@ -12,6 +13,13 @@ const Search = () => {
   const totalPage = 10;
   const isPrevPage = true;
   const isNextPage = true;
+
+  const {
+    data: categoriesResponse,
+    isLoading: loadingCategories,
+    isError,
+    error
+  } = useCategoriesQuery("");
 
   const cartHandler = (cartItem) => { }
 
@@ -46,9 +54,12 @@ const Search = () => {
             onChange={(e) => setCategory(e.target.value)}
           >
             <option value="">ALL</option>
-            <option value="">laptop</option>
-            <option value="">mobile</option>
-            <option value="">camera</option>
+            {!loadingCategories &&
+              categoriesResponse?.categories.map((i) => (
+                <option key={i} value={i}>
+                  {i.toUpperCase()}
+                </option>
+              ))}
           </select>
         </div>
       </aside>

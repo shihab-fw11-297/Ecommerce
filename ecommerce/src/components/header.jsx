@@ -1,14 +1,22 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FaSearch, FaShoppingBag, FaSignInAlt, FaSignOutAlt, FaUser } from "react-icons/fa"
+import { signOut } from "firebase/auth";
+import toast from "react-hot-toast";
+import { auth } from "../firebase";
 
-const user = { _id: "", login:false }
-const Header = () => {
+const Header = ({ user }) => {
     const [open,setOpen] = useState(false);
 
-    const logoutHandler = () =>{
-        setOpen(false)
-    }
+    const logoutHandler = async () => {
+        try {
+          await signOut(auth);
+          toast.success("Sign Out Successfully");
+          setOpen(false);
+        } catch (error) {
+          toast.error("Sign Out Fail");
+        }
+      };
 
     return (
         <nav className='header'>
@@ -26,7 +34,7 @@ const Header = () => {
             </Link>
 
             {
-                user?.login ? (
+               user?._id ?(
                     <>
                     <button onClick={()=> setOpen((prev)=> !prev)}>
                         <FaUser/>    
@@ -34,14 +42,14 @@ const Header = () => {
                     <dialog open={open}>
                         <div>
                             <Link to="/orders">Orders</Link>
-                            <button>
+                            <button onClick={logoutHandler}>
                                 <FaSignOutAlt/>
                             </button>
                         </div>
                     </dialog>
                     </>
                 ) : (
-                    <Link onClick={logoutHandler} to={"/login"}>
+                    <Link  to={"/login"}>
                         <FaSignInAlt />
                     </Link>
                 )

@@ -4,8 +4,6 @@ import { Navigate, Outlet } from "react-router-dom";
 const ProtectedRoute = ({
   isAuthenticated,
   children,
-  adminOnly,
-  admin,
   redirect = "/",
 }) => {
   if (!isAuthenticated) return <Navigate to={redirect} />

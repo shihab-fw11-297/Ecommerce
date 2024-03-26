@@ -10,7 +10,7 @@
   box-sizing: border-box;
 }
 
-body{
+body {
   user-select: none;
 }
 
@@ -22,16 +22,18 @@ a {
 .red {
   color: red;
 }
+
 .purple {
   color: rgb(47, 0, 255);
 }
+
 .green {
   color: rgb(0, 195, 0);
 }
 
-$color1:white;
-$color2:rgb(46,46,46);
-$color3:rgb(0,106,136);
+$color1: white;
+$color2: rgb(46, 46, 46);
+$color3: rgb(0, 106, 136);
 
 @import "admin-styles/mixin";
 @import "home";
@@ -51,7 +53,8 @@ $color3:rgb(0,106,136);
   width: 100%;
   margin: auto;
   overflow: auto;
-  > h1 {
+
+  >h1 {
     @include heading;
     margin: 1rem 0;
     text-align: left;
@@ -66,26 +69,26 @@ $color3:rgb(0,106,136);
 
 
 
-.header{
-  @include flex(row,space-between,stretch,1.5rem);
+.header {
+  @include flex(row, space-between, stretch, 1.5rem);
   padding: 1rem;
 
-  .leftside{
+  .leftside {
     font-family: 'Arial Black', sans-serif; // Example of a heavier font for a logo effect
     font-size: 20px; // Example font size for the logo tex
   }
-  
-  .rightSide{
-    @include flex(row,flex-end,stretch,1.2rem);
 
-    a{
-    color: $color2;
-    letter-spacing: 2px;
-    font-size: 1.2rem;
+  .rightSide {
+    @include flex(row, flex-end, stretch, 1.2rem);
 
-    &:hover{
-      color: $color3;
-    }
+    a {
+      color: $color2;
+      letter-spacing: 2px;
+      font-size: 1.2rem;
+
+      &:hover {
+        color: $color3;
+      }
     }
   }
 
@@ -95,12 +98,13 @@ $color3:rgb(0,106,136);
     margin: 1rem 0;
     text-align: center;
   }
-  
+
   button {
     border: none;
     font-size: 1.2rem;
     cursor: pointer;
     background-color: transparent;
+
     &:hover {
       color: $color3;
     }
@@ -114,7 +118,8 @@ $color3:rgb(0,106,136);
     position: absolute;
     left: calc(100% - 100px);
     top: 8%;
-    > div {
+
+    >div {
       @include flex(column, flex-start, center, 0.25rem);
     }
   }
@@ -181,29 +186,35 @@ $color3:rgb(0,106,136);
   @include grid(1fr 4fr, 2rem);
   height: 100vh;
   background-color: rgb(247, 247, 247);
-  > aside {
+
+  >aside {
     width: 100%;
     background-color: white;
     padding: 1rem;
     z-index: 10;
     overflow-y: auto;
+
     &::-webkit-scrollbar {
       display: none;
     }
 
-    > div {
+    >div {
       margin: 2rem 1rem;
-      > h5 {
+
+      >h5 {
         @include heading(2px);
         opacity: 0.8;
         margin: 1rem 0;
       }
-      > ul {
+
+      >ul {
         @include flex(column, unset, unset, 0.5rem);
         list-style: none;
-        > li {
+
+        >li {
           padding: 0.5rem 1rem;
           border-radius: 10px;
+
           a {
             color: rgba(0, 0, 0, 0.825);
             @include flex(row, unset);
@@ -217,6 +228,7 @@ $color3:rgb(0,106,136);
 .table {
   border-collapse: collapse;
   width: 100%;
+
   th,
   td {
     padding: 8px;
@@ -246,6 +258,7 @@ $color3:rgb(0,106,136);
         object-fit: contain;
         border-radius: 10px;
       }
+
       a {
         text-decoration: none;
         background-color: rgba(44, 104, 255, 0.455);
@@ -253,6 +266,7 @@ $color3:rgb(0,106,136);
         padding: 0.25rem 0.5rem;
         border-radius: 10px;
       }
+
       button {
         width: 2rem;
         height: 2rem;
@@ -262,6 +276,7 @@ $color3:rgb(0,106,136);
         background-color: transparent;
         cursor: pointer;
         color: rgb(255, 44, 44);
+
         &:hover {
           opacity: 0.6;
         }
@@ -281,7 +296,8 @@ $color3:rgb(0,106,136);
 .table-pagination {
   @include flex;
   padding: 2rem;
-  > button {
+
+  >button {
     padding: 0.5rem 1rem;
     border: none;
     outline: none;
@@ -289,6 +305,7 @@ $color3:rgb(0,106,136);
     cursor: pointer;
     background-color: rgba(0, 115, 255);
     color: white;
+
     &:disabled {
       background-color: rgba(0, 115, 255, 0.1);
       cursor: not-allowed;
@@ -328,9 +345,10 @@ $color3:rgb(0,106,136);
 
 .loader {
   width: 100%;
-  height: 100vh;
+  height: 85vh;
   @include flex;
-  > div {
+
+  >div {
     @include square(10rem);
     border-radius: 50%;
     border-top: 1rem solid rgb(43, 43, 43);
@@ -341,11 +359,91 @@ $color3:rgb(0,106,136);
   }
 }
 
+/* Skeleton Loading Styles */
+.skeleton-loader {
+  display: flex;
+  margin: auto;
+  width: 90%;
+}
+
+.skeleton-card {
+  width: 18.75rem;
+  height: 20rem;
+  padding: 1rem;
+  margin: 0.5rem; // Adjust margin as needed
+  position: relative;
+  background-color: #f3f3f3; // Light gray background color
+}
+
+.skeleton-card-image {
+  width: calc(100% - 2rem);
+  height: 15rem; // Adjust height to match card image height
+  background-color: #ddd; // Gray background color for image placeholder
+  margin: 1rem auto;
+}
+
+.skeleton-card-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.skeleton-card-name {
+  width: 50%;
+  height: 20px;
+  background-color: #ddd; // Gray background color for text placeholder
+  // margin-bottom: 10px;
+  margin: auto auto 10px auto;
+}
+
+.skeleton-card-price {
+  width: 30%; // Adjust width as needed
+  height: 20px;
+  background-color: #ddd; // Gray background color for text placeholder
+  // margin-bottom: 10px;
+  margin: auto auto 10px auto;
+
+}
+
+.skeleton-card-button {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 100%;
+  background-color: #ddd; // Gray background color for button placeholder
+}
+
+
 @keyframes loading-animation {
   to {
     transform: rotateZ(360deg);
   }
 }
+
+@keyframes up-and-down {
+  to {
+    transform: translate(-50%, -20%);
+  }
+}
+
+@keyframes skeleon-loading {
+  0% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes loading-animation {
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+
 @keyframes up-and-down {
   to {
     transform: translate(-50%, -20%);

@@ -1,0 +1,38 @@
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import axios from "axios";
+
+
+export const productAPI = createApi({
+    reducerPath: "productApi",
+    baseQuery: fetchBaseQuery({
+        baseUrl: `${import.meta.env.VITE_SERVER}/api/v1/product/`,
+    }),
+    tagTypes: ["product"],
+    endpoints: (builder) => ({
+        latestProducts: builder.query({
+            query: ({ page,limit }) => {
+                let base = `latest?page=${page}&limit=${limit}`;
+                return base;
+            },
+            providesTags: ["product"],
+        }),
+        bestProducts: builder.query({
+            query: ({ page,limit }) => {
+                let base = `bestProducts?page=${page}&limit=${limit}`;
+                return base;
+            },
+            providesTags: ["product"],
+        }),
+        categories: builder.query({
+            query: () => `categories`,
+            providesTags: ["product"],
+        }),
+
+    }),
+});
+
+export const {
+    useLatestProductsQuery,
+    useCategoriesQuery,
+    useBestProductsQuery
+} = productAPI;
