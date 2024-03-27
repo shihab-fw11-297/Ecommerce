@@ -4,6 +4,9 @@ import Card from '../components/card';
 import Slider from '../components/slider';
 import { useLatestProductsQuery, useBestProductsQuery } from '../redux/api/productAPI';
 import { Skeleton } from "../components/loader";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../redux/reducer/cartReducer";
+import toast from 'react-hot-toast';
 
 const dummyData = [
     { url: 'https://images-eu.ssl-images-amazon.com/images/G/31/img21/OHL/Bestseller/holi/GATEWAY/Hero_PC_BEST-SELLER_2X._CB579340867_.jpg', alt: 'Slide 1' },
@@ -18,6 +21,8 @@ const Home = () => {
     const [bestPage, setBestPage] = useState(1);
     const limit = 4;
 
+    const dispatch = useDispatch();
+
     const { data: latestData, isLoading: latestLoading, isError: latestError, isFetching: latestFetching } = useLatestProductsQuery({ page: latestPage, limit });
     const { data: bestData, isLoading: bestLoading, isError: bestError, isFetching: bestFetching } = useBestProductsQuery({ page: bestPage, limit });
 
@@ -29,17 +34,24 @@ const Home = () => {
         setter((prevPage) => Math.max(prevPage - 1, 1));
     };
 
+    const addToCartHandler = (cartItem) =>{
+        console.log("----------",cartItem)
+        if(cartItem.stock < 1) return toast.error("Out Of Stock")
+        dispatch(addToCart(cartItem))
+        toast.success("Added to cart");
+    }
+
     const renderProducts = (data) => {
         return (
             <div className="slider-container">
                 {data.products.map((product) => (
                     <Card
-                        key={product._id}
-                        productId={product._id}
+                        key={product.id}
+                        prodId={product.id}
                         name={product.name}
                         price={product.price}
                         stock={product.stock}
-                        handler={() => {}}
+                        handler={addToCartHandler}
                         photo={product.photo}
                     />
                 ))}
@@ -58,7 +70,7 @@ const Home = () => {
             </h1>
             <main>
                 <div className="slider">
-                    {latestLoading || latestFetching ? <Skeleton width="80vw" length={4} /> : renderProducts(latestData)}
+                    {latestLoading || latestFetching ? <Skeleton width="80vw" length={4} home={true}/> : renderProducts(latestData)}
                     <button className="prev-slide" disabled={latestPage <= 1} onClick={handlePrev(setLatestPage)}>
                         &#10094;
                     </button>
@@ -75,7 +87,7 @@ const Home = () => {
             </h1>
             <main>
                 <div className="slider">
-                    {bestLoading || bestFetching ? <Skeleton width="80vw" length={4} /> : renderProducts(bestData)}
+                    {bestLoading || bestFetching ? <Skeleton width="80vw" length={4} home={true}/> : renderProducts(bestData)}
                     <button className="prev-slide" disabled={bestPage <= 1} onClick={handlePrev(setBestPage)}>
                         &#10094;
                     </button>

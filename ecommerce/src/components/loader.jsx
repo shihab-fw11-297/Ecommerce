@@ -9,9 +9,8 @@ const Loader = () => {
 };
 
 export default Loader;
-
-export const Skeleton = ({ width = 'unset', length }) => {
-  console.log("length",length)
+export const Skeleton = ({ width = 'unset', length, home }) => {
+  console.log("length", length);
   const skeletons = Array.from({ length }, (_, idx) => (
     <div key={idx} className="skeleton-card">
       <div className="skeleton-card-image"></div>
@@ -23,9 +22,8 @@ export const Skeleton = ({ width = 'unset', length }) => {
   ));
 
   return (
-    <div className="skeleton-loader" style={{ width }}>
+    <div className="skeleton-loader" style={{ width, flexWrap: !home ? 'wrap' : 'nowrap' }}>
       {skeletons}
     </div>
   );
 };
-

@@ -1,54 +1,91 @@
 import { useEffect, useState } from "react";
-// import { VscError } from "react-icons/vsc";
+import axios from "axios";
 import { BiError } from "react-icons/bi";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import CartItems from "../components/cart-items";
-
-
+import {
+  addToCart,
+  calculatePrice,
+  removeCartItem,
+  discountApplied
+} from "../redux/reducer/cartReducer";
+import { server } from "../redux/store";
 
 const Cart = () => {
-  const [coupanCode,setCoupanCode] = useState("");
-  const [isValidCoupanCode,setIsValidCoupanCode] = useState(false);
-  const cartItems = [{
-    productId:"12345",
-    photo:"https://media.licdn.com/dms/image/D4D22AQGPkmQXMY3wgA/feedshare-shrink_2048_1536/0/1710981912654?e=1714003200&v=beta&t=8w59np-mC44w2oaUT1E9Xd6tvo0-5PShaKFbASOuHXk",
-    name:"apple",
-    price:5000,
-    quantity:4,
-    stock:10
-  }];
-  const subTotal = 4000;
-  const tax = Math.round(subTotal * 0.18);
-  const shippingCharge = 400;
-  const total = subTotal + tax + shippingCharge;
-  const discount = 5;
+  const { cartItems, subtotal, tax, total, shippingCharges, discount } =
+    useSelector((state) => state.cartReducer);
+  const dispatch = useDispatch();
+  const [coupanCode, setCoupanCode] = useState("");
+  const [isValidCoupanCode, setIsValidCoupanCode] = useState(false);
 
-  useEffect(()=>{
-    const timeOut = setTimeout(()=>{
-      if(Math.random() > 0.5) setIsValidCoupanCode(true);
-      else setIsValidCoupanCode(false);
-    },1000)
 
-    return () =>{
-      clearTimeout(timeOut);
+  useEffect(() => {
+    const { token: cancelToken, cancel } = axios.CancelToken.source();
+
+    const timeOutID = setTimeout(() => {
+      axios
+        .get(`${server}/api/v1/payment/discount?coupon=${coupanCode}`, {
+          cancelToken,
+        })
+        .then((res) => {
+          dispatch(discountApplied(res.data.discount));
+          setIsValidCoupanCode(true);
+          dispatch(calculatePrice());
+        })
+        .catch(() => {
+          dispatch(discountApplied(0));
+          setIsValidCoupanCode(false);
+          dispatch(calculatePrice());
+        });
+    }, 1000);
+
+    return () => {
+      clearTimeout(timeOutID);
+      cancel();
       setIsValidCoupanCode(false);
-    }
-  },[coupanCode])
-  
+    };
+  }, [coupanCode]);
+
+  const incrementHandler = (cartItem) => {
+    if (cartItem.quantity >= cartItem.stock) return;
+
+    dispatch(addToCart({ ...cartItem, quantity: cartItem.quantity + 1 }));
+  };
+  const decrementHandler = (cartItem) => {
+    if (cartItem.quantity <= 1) return;
+
+    dispatch(addToCart({ ...cartItem, quantity: cartItem.quantity - 1 }));
+  };
+
+
+  const removeHandler = (prodId) => {
+    console.log("***",prodId)
+    dispatch(removeCartItem(prodId));
+  };
+
+  useEffect(() => {
+    dispatch(calculatePrice());
+  }, [cartItems]);
 
   return (
     <div className='cart'>
       <main>
         {
-          cartItems.length > 0 ? cartItems.map((i,idx)=>(
-            <CartItems key={idx} cartItem={i} />
-          )) : 
-          <h1>No Data Found</h1>
+          cartItems.length > 0 ? cartItems.map((i, idx) => (
+            <CartItems
+              incrementHandler={incrementHandler}
+              decrementHandler={decrementHandler}
+              removeHandler={removeHandler}
+              key={idx}
+              cartItem={i} />
+          )) :
+            <h1>No Data Found</h1>
         }
       </main>
       <aside>
-        <p>Sub Total : ${subTotal}</p>
-        <p>Shipping Charges : ${shippingCharge}</p>
+        <p>Sub Total : ${subtotal}</p>
+        <p>Shipping Charges : ${shippingCharges}</p>
         <p>Tax : ${tax}</p>
         <p>
           Discount : <em> - ${discount} </em>
@@ -57,8 +94,8 @@ const Cart = () => {
           <b>Total : ${total}</b>
         </p>
 
-        <input type="text" placeholder="coupan code" value={coupanCode} onChange={(e)=> setCoupanCode(e.target.value)}/>
-     
+        <input type="text" placeholder="coupan code" value={coupanCode} onChange={(e) => setCoupanCode(e.target.value)} />
+
         {coupanCode &&
           (isValidCoupanCode ? (
             <span className="green">

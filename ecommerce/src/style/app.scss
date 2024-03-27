@@ -125,6 +125,14 @@ $color3: rgb(0, 106, 136);
   }
 }
 
+.not-found {
+  height: 80vh;
+  @include flex(column);
+  > svg {
+    font-size: 5rem;
+  }
+}
+
 .slider {
   position: relative;
   overflow: hidden;
@@ -364,11 +372,13 @@ $color3: rgb(0, 106, 136);
   display: flex;
   margin: auto;
   width: 90%;
+  // flex-wrap: wrap;
+  gap:0rem;
 }
 
 .skeleton-card {
   width: 18.75rem;
-  height: 20rem;
+  height: 25rem;
   padding: 1rem;
   margin: 0.5rem; // Adjust margin as needed
   position: relative;
@@ -450,6 +460,24 @@ $color3: rgb(0, 106, 136);
   }
 }
 
+.checkout-container {
+  max-width: 400px;
+  width: 100%;
+  margin: auto;
+  margin-top: 5rem;
+  margin-bottom: 5rem;
+
+  > form {
+    @include flex(column, flex-start, stretch, 2rem);
+
+    > button {
+      @include btn(1rem, $color3, $color1);
+      width: 100%;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+  }
+}
 
 .footer {
   background-color: #333;

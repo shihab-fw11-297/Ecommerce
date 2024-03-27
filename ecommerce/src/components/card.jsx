@@ -10,7 +10,11 @@ const Card = ({prodId,price,name,photo,stock,handler}) => {
         <span>${price}</span>
 
         <div>
-            <button onClick={()=> handler()}><FaPlus/></button>
+        <button
+          onClick={() =>
+            handler({ prodId, price, name, photo, stock, quantity: 1 })
+          }
+        ><FaPlus/></button>
         </div>
     </div>
   )

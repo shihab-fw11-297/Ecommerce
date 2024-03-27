@@ -2,8 +2,15 @@ import React from 'react'
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
 const Shipping = () => {
+  const { cartItems, subtotal, tax, total, shippingCharges, discount } =
+    useSelector((state) => state.cartReducer);
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [shippingInfo, setShippingInfo] = useState({
     address: "",
     city: "",
@@ -11,7 +18,6 @@ const Shipping = () => {
     country: "",
     pinCode: "",
   });
-  const navigate = useNavigate();
   const changeHandler = (e) => {
     setShippingInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -19,6 +25,11 @@ const Shipping = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
   }
+
+  useEffect(() => {
+    console.log("---",cartItems.length)
+    if (cartItems.length <= 0) return navigate("/cart");
+  }, [cartItems]);
 
   return (
     <div className="shipping">
