@@ -3,6 +3,10 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { server } from "../redux/store";
+import axios from "axios";
+import { saveShippingInfo } from "../redux/reducer/cartReducer";
 
 const Shipping = () => {
   const { cartItems, subtotal, tax, total, shippingCharges, discount } =
@@ -24,7 +28,30 @@ const Shipping = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-  }
+
+    dispatch(saveShippingInfo(shippingInfo));
+
+    try {
+      const { data } = await axios.post(
+        `${server}/api/v1/payment/create`,
+        {
+          amount: total,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      navigate("/pay", {
+        state: data.clientSecret,
+      });
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
+  };
 
   useEffect(() => {
     console.log("---",cartItems.length)

@@ -6,7 +6,7 @@ const reduceStock = async (orderItems) => {
   try {
     for (let i = 0; i < orderItems.length; i++) {
       const order = orderItems[i];
-      const product = await Product.findByPk(order.id);
+      const product = await Product.findByPk(order.prodId);
       if (!product) {
         throw new Error("Product Not Found");
       }
