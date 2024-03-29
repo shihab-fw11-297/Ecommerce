@@ -27,3 +27,84 @@ export const Skeleton = ({ width = 'unset', length, home }) => {
     </div>
   );
 };
+
+
+
+export const LoadingTable = () => {
+  return (
+    <table className={`loading-table loading`}>
+      <thead>
+        <tr>
+        <th className="loading-cell" style={{ padding: '2rem 1rem' }}></th>
+          <th className="loading-cell" style={{ padding: '2rem 1rem' }}></th>
+          <th className="loading-cell" style={{ padding: '2rem 1rem' }}></th>
+          <th className="loading-cell" style={{ padding: '2rem 1rem' }}></th>
+          <th className="loading-cell" style={{ padding: '2rem 1rem' }}></th>
+          <th className="loading-cell" style={{ padding: '2rem 1rem' }}></th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+            </tr>
+            <tr>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+            </tr>
+            <tr>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+            </tr>
+            <tr>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+              <td className="loading-cell"></td>
+            </tr>
+      </tbody>
+    </table>
+  );
+};
+
+
+export const SkeletonOrderDetail = () => (
+  <div className="skeleton-order-detail">
+    <div className="skeleton-order-header"></div>
+    <div className="skeleton-info-section"></div>
+    <div className="skeleton-order-items">
+      <div className="skeleton-order-item">
+        <div className="skeleton-img"></div>
+        <div className="skeleton-item-details">
+          <p></p>
+          <p></p>
+          <p></p>
+        </div>
+      </div>
+      <div className="skeleton-order-item">
+        <div className="skeleton-img"></div>
+        <div className="skeleton-item-details">
+          <p></p>
+          <p></p>
+          <p></p>
+        </div>
+      </div>
+    </div>
+    <div className="skeleton-order-summary"></div>
+    <div className="skeleton-order-dates"></div>
+  </div>
+);

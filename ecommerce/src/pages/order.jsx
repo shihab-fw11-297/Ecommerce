@@ -1,13 +1,16 @@
-import React from 'react'
-import TableHOC from '../components/TableHOC'
-import { Link } from 'react-router-dom';
-import { useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { Column } from "react-table";
+import TableHOC from "../components/TableHOC";
+import { LoadingTable, Skeleton } from "../components/loader";
+import { useMyOrdersQuery } from "../redux/api/orderAPI";
 
-
-const Column = [
+const column = [
   {
     Header: "ID",
-    accessor: "_id",
+    accessor: "id",
   },
   {
     Header: "Quantity",
@@ -32,23 +35,56 @@ const Column = [
 ];
 
 const Orders = () => {
-  const [rows, setRows] = useState([{
-    _id: "15515",
-    amount: 50,
-    quantity: 10,
-    discount: 5,
-    status: <span className='red'>Processing</span>,
-    action: <Link to={"/order/abcs"}>View</Link>
-  }]);
+  const { user } = useSelector((state) => state.userReducer);
 
-  const Table = TableHOC(Column,rows,"dashboard-product-box","Orders",rows.length > 6)();
+  const { isLoading, data, isError, error } = useMyOrdersQuery(user?._id);
+
+  const [rows, setRows] = useState([]);
+
+  if (isError) {
+    const err = error;
+    toast.error(err.data.message);
+  }
+
+  useEffect(() => {
+    if (data)
+      setRows(
+        data.orders.map((i) => ({
+          id: i.id,
+          amount: i.total,
+          discount: i.discount,
+          quantity: i.orderItems.length,
+          status: (
+            <span
+              className={
+                i.status === "Processing"
+                  ? "red"
+                  : i.status === "Shipped"
+                  ? "green"
+                  : "purple"
+              }
+            >
+              {i.status}
+            </span>
+          ),
+          action: <Link to={`/order/${i.id}`}>View</Link>,
+        }))
+      );
+  }, [data]);
+
+  const Table = TableHOC(
+    column,
+    rows,
+    "dashboard-product-box",
+    "Orders",
+    rows.length > 6
+  )();
   return (
     <div className="container">
-    <h1>My Orders</h1>
-    {Table}
-    {/* {isLoading ? <Skeleton length={20} /> : Table} */}
-  </div>
-  )
-}
+      <h1>My Orders</h1>
+      {isLoading ? <LoadingTable length={20} /> : Table}
+    </div>
+  );
+};
 
-export default Orders
+export default Orders;

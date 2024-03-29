@@ -8,6 +8,7 @@ const { Op } = require('sequelize');
 const myCache = require('../server');
 const { deleteCache, storeCache, findCacheData, storeListCache } = require('../config/cache');
 const { faker } = require('@faker-js/faker');
+var gis = require('g-i-s');
 
 const newProduct = TryCatch(
     async (req, res, next) => {
@@ -285,9 +286,11 @@ const generateRandomProducts = async (count = 10) => {
     const products = [];
 
     for (let i = 0; i < count; i++) {
+      const productName = faker.commerce.productName();
+      const photoUrl = await getImageUrl(productName);
       const product = {
-        name: faker.commerce.productName(),
-        photo: faker.image.urlLoremFlickr({ category: faker.commerce.department() }),
+        name: productName,
+        photo: photoUrl,
         price: faker.commerce.price({ min: 1500, max: 80000, dec: 0 }),
         stock: faker.datatype.number({ min: 0, max: 100 }),
         category: faker.commerce.department(),
@@ -298,16 +301,51 @@ const generateRandomProducts = async (count = 10) => {
       products.push(product);
     }
 
+    console.log(products);
     try {
       await Product.bulkCreate(products);
       console.log({ success: true });
     } catch (error) {
       console.error('Error generating products:', error);
     }
-  };
+};
+
+async function getImageUrl(productName) {
+  return new Promise((resolve, reject) => {
+    gis(productName, (error, results) => {
+      if (error) {
+        console.error(error);
+        reject(error);
+      } else {
+        const imageUrl = results[0].url;
+        console.log(imageUrl);
+        resolve(imageUrl);
+      }
+    });
+  });
+}
+
+generateRandomProducts();
 
 
-//   generateRandomProducts(20)
+
+  const deleteRandomsProducts = async () => {
+  const products = await Product.findAll({});
+
+  for (let i = 0; i < products.length; i++) {
+    const product = products[i];
+    await Product.destroy({
+        where: {
+            id: product.id
+        }
+    });
+  }
+
+  console.log({ succecss: true });
+};
+
+//   generateRandomProducts(10)
+// deleteRandomsProducts();
 
 
 module.exports = { getbestProducts,newProduct, getlatestProducts, getAllProducts, getAllCategories, getAdminProducts, getSingleProduct, deleteProduct, updateProduct }

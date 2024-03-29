@@ -6,6 +6,8 @@ const userRoute = require("./routes/user.js");
 const productRoute = require("./routes/products.js");
 const orderRoute = require("./routes/order.js");
 const paymentRoute = require("./routes/payment.js");
+const cartRoute = require("./routes/cart.js");
+
 const cors = require('cors');
 const morgan = require('morgan');
 
@@ -24,7 +26,7 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/order", orderRoute);
 app.use("/api/v1/payment", paymentRoute);
-
+app.use('/api/v1/cart',cartRoute)
 
 app.use(errorMiddleware);
 

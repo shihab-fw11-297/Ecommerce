@@ -23,8 +23,7 @@ modelsDB.users = require("../model/user")(sequelize, DataTypes);
 modelsDB.product = require("../model/product")(sequelize, DataTypes);
 modelsDB.order = require("../model/order")(sequelize, DataTypes);
 modelsDB.coupan = require("../model/coupan")(sequelize, DataTypes);
-
-
+modelsDB.cart = require("../model/cart")(sequelize, DataTypes);
 
 modelsDB.order.belongsTo(modelsDB.users,{foreignKey:`user`, as:`userInfo`});
 

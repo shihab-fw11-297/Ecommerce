@@ -19,7 +19,7 @@ const dummyData = [
 const Home = () => {
     const [latestPage, setLatestPage] = useState(1);
     const [bestPage, setBestPage] = useState(1);
-    const limit = 4;
+    const limit = 5;
 
     const dispatch = useDispatch();
 
@@ -70,7 +70,7 @@ const Home = () => {
             </h1>
             <main>
                 <div className="slider">
-                    {latestLoading || latestFetching ? <Skeleton width="80vw" length={4} home={true}/> : renderProducts(latestData)}
+                    {latestLoading || latestFetching ? <Skeleton width="80vw" length={5} home={true}/> : renderProducts(latestData)}
                     <button className="prev-slide" disabled={latestPage <= 1} onClick={handlePrev(setLatestPage)}>
                         &#10094;
                     </button>
@@ -87,7 +87,7 @@ const Home = () => {
             </h1>
             <main>
                 <div className="slider">
-                    {bestLoading || bestFetching ? <Skeleton width="80vw" length={4} home={true}/> : renderProducts(bestData)}
+                    {bestLoading || bestFetching ? <Skeleton width="80vw" length={5} home={true}/> : renderProducts(bestData)}
                     <button className="prev-slide" disabled={bestPage <= 1} onClick={handlePrev(setBestPage)}>
                         &#10094;
                     </button>

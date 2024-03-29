@@ -38,11 +38,12 @@ export const orderApi = createApi({
             providesTags: ["orders"],
         }),
         orderDetails: builder.query({
-            query: (id) => id,
+            query: (id) => `${id}`,
             providesTags: ["orders"],
         }),
     }),
 });
+
 
 export const {
     useNewOrderMutation,

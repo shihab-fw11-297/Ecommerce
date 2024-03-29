@@ -43,7 +43,7 @@
       }
   
       .search-product-list {
-        @include flex(row, flex-start, flex-start);
+        @include flex(row, flex-start, flex-start,0);
         flex-wrap: wrap;
         height: calc(100% - 10rem);
         overflow-y: auto;

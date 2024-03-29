@@ -9,7 +9,7 @@ const User = modelsDB.users;
 
 const myOrders = TryCatch(async (req, res, next) => {
     const { id } = req.query;
-    const orders = await Order.findOne({
+    const orders = await Order.findAll({
         where: {
             user: id
         }
